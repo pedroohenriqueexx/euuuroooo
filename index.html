@@ -44,6 +44,141 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 
   <body>
     <div id="root"></div>
+    <script src="assets/ml-analytics.js"></script>
+    <script>
+(function () {
+  function saveUTMs() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var utms = JSON.parse(localStorage.getItem('ml_utms') || '{}');
+
+      params.forEach(function (value, key) {
+        if (
+          key.indexOf('utm_') === 0 ||
+          key === 'ttclid' ||
+          key === 'fbclid'
+        ) {
+          utms[key] = value;
+        }
+      });
+
+      localStorage.setItem('ml_utms', JSON.stringify(utms));
+    } catch (e) {}
+  }
+
+  function fireVirtualPageview() {
+    try {
+      if (window.MLA && typeof window.MLA.trackFunnelView === 'function') {
+        window.MLA.trackFunnelView();
+      }
+    } catch (e) {}
+  }
+
+  saveUTMs();
+
+  var _pushState = history.pushState;
+  var _replaceState = history.replaceState;
+
+  history.pushState = function () {
+    var ret = _pushState.apply(this, arguments);
+    setTimeout(fireVirtualPageview, 50);
+    return ret;
+  };
+
+  history.replaceState = function () {
+    var ret = _replaceState.apply(this, arguments);
+    setTimeout(fireVirtualPageview, 50);
+    return ret;
+  };
+
+  window.addEventListener('popstate', function () {
+    setTimeout(fireVirtualPageview, 50);
+  });
+})();
+</script>
+<script>
+(function () {
+  var CHECKOUT_BASE = 'https://checkout.cooud.com/01KMNTFA2EEM45M56BDDB1GYBV';
+
+  function buildCheckoutUrl() {
+    var current = new URLSearchParams(window.location.search);
+    var finalUrl = new URL(CHECKOUT_BASE);
+
+    current.forEach(function (value, key) {
+      finalUrl.searchParams.set(key, value);
+    });
+
+    try {
+      var utms = JSON.parse(localStorage.getItem('ml_utms') || '{}');
+      Object.keys(utms).forEach(function (key) {
+        if (!finalUrl.searchParams.has(key)) {
+          finalUrl.searchParams.set(key, utms[key]);
+        }
+      });
+    } catch (e) {}
+
+    try {
+      if (window.posthog && typeof window.posthog.get_distinct_id === 'function') {
+        finalUrl.searchParams.set('ph_distinct_id', window.posthog.get_distinct_id());
+      }
+    } catch (e) {}
+
+    return finalUrl.toString();
+  }
+
+  function handleCheckoutClick(anchor) {
+    anchor.addEventListener('click', function (e) {
+      var href = anchor.getAttribute('href') || '';
+      if (href.indexOf('checkout.cooud.com/01KMNTFA2EEM45M56BDDB1GYBV') === -1) return;
+
+      e.preventDefault();
+
+      try {
+        if (window.MLA && typeof window.MLA.trackInitiateCheckout === 'function') {
+          window.MLA.trackInitiateCheckout([
+            {
+              id: 'offer-main',
+              name: 'Main Offer',
+              quantity: 1,
+              price: 2155
+            }
+          ]);
+        } else if (window.MLA && typeof window.MLA.track === 'function') {
+          window.MLA.track('InitiateCheckout', {
+            offer_id: 'offer-main',
+            checkout_url: CHECKOUT_BASE
+          });
+        }
+      } catch (err) {}
+
+      var nextUrl = buildCheckoutUrl();
+      setTimeout(function () {
+        window.location.href = nextUrl;
+      }, 180);
+    });
+  }
+
+  function bindCheckoutButtons() {
+    var anchors = document.querySelectorAll('a[href*="checkout.cooud.com/01KMNTFA2EEM45M56BDDB1GYBV"]');
+    anchors.forEach(handleCheckoutClick);
+  }
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[href*="checkout.cooud.com/01KMNTFA2EEM45M56BDDB1GYBV"]');
+    if (a && !a.dataset.mlaBound) {
+      a.dataset.mlaBound = '1';
+      handleCheckoutClick(a);
+    }
+  });
+
+  var observer = new MutationObserver(function () {
+    bindCheckoutButtons();
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+  bindCheckoutButtons();
+})();
+</script>
   </body>
 
 <!-- Mirrored from ofertassemanastik.lovable.app/ by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 19 Mar 2026 01:21:45 GMT -->
