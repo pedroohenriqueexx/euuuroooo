@@ -760,35 +760,138 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
                     <div class=info-box>
                         <p class=info-text>Without the invoice record, the system cannot release your withdrawal.</p>
                     </div>
-                    <div class=price-row><span class=price-label>Invoice issuance fee</span><span
-                            class=price-value>$11.88</span></div><button id="btnNfs" class="cta-button cta-primary"
-                        data-href="https://checkout.cooud.com/01KMNXZGQVYTNS02W5DA0BTAWW">Complete Required Invoice
-                        Issuance</button>
-                    <script>
-                        (function () {
-                            const btn = document.getElementById('btnNfs') || document.querySelector('.cta-button.cta-primary');
-                            if (!btn) return;
+                    <div class=price-row><span class=price-label>Invoice issuance fee</span><span class=price-value>$11.88</span></div>
 
-                            const baseHref = btn.getAttribute('data-href');
-                            if (!baseHref) return;
+<!-- Botão com efeito One-Click manual -->
+<div style="display:flex;flex-direction:column;gap:12px;width:100%;font-family:inherit;">
+  <button
+    id="btnUp5"
+    type="button"
+    style="display: flex; align-items: center; justify-content: center; text-decoration: none; font-family: inherit; font-weight: 600; padding: 16px 24px; font-size: 17px; border-radius: 48px; background-color: #fe2b54; color: #ffffff; border: none; width: 100%; cursor: pointer; transition: all 0.2s;"
+  >
+    Complete Required Invoice Issuance
+  </button>
+  <button
+    id="btnDismiss"
+    type="button"
+    style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-family: inherit; font-weight: 400; padding: 12px 20px; font-size: 15px; border-radius: 8px; background-color: transparent; color: #6b7280; border: none; cursor: pointer;"
+  >
+    Não, obrigado
+  </button>
+</div>
 
-                            function go(e) {
-                                if (e) e.preventDefault();
+<p class=cta-footnote>Invoice issuance is required for balances above $2,000.00</p>
 
-                                const targetUrl = new URL(baseHref, window.location.href);
-                                const currentParams = new URLSearchParams(window.location.search);
+<script src="https://js.stripe.com/v3/" async defer></script>
 
-                                currentParams.forEach((v, k) => targetUrl.searchParams.set(k, v));
+<script>
+  (function() {
+    // ============================================
+    // CAPTURA UTMs DA URL (igual ao script antigo)
+    // ============================================
+    function getUTMQueryString() {
+      const params = new URLSearchParams(window.location.search);
+      const fields = ['src', 'sck', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+      const utms = {};
+      
+      for (let i = 0; i < fields.length; i++) {
+        const v = params.get(fields[i]);
+        if (v) utms[fields[i]] = v;
+      }
+      
+      const fbpMatch = document.cookie.match(/(?:^|;\s*)_fbp=([^;]*)/);
+      if (fbpMatch) utms['_fbp'] = fbpMatch[1];
+      
+      const fbclid = params.get('fbclid');
+      if (fbclid) utms['_fbc'] = 'fb.1.' + Date.now() + '.' + fbclid;
+      
+      const queryString = new URLSearchParams(utms).toString();
+      return queryString ? '?' + queryString : '';
+    }
 
-                                window.location.assign(targetUrl.toString());
-                            }
-
-                            btn.addEventListener('pointerdown', go, { passive: false });
-                            btn.addEventListener('click', go);
-                        })();
-                    </script>
-
-                    <p class=cta-footnote>Invoice issuance is required for balances above $2,000.00</p>
+    // ============================================
+    // URL DO CHECKOUT (UP5)
+    // ============================================
+    const CHECKOUT_URL = 'https://checkout.cooud.com/01KMNXZGQVYTNS02W5DA0BTAWW';
+    
+    // ============================================
+    // ELEMENTOS
+    // ============================================
+    const btn = document.getElementById('btnUp5');
+    const btnDismiss = document.getElementById('btnDismiss');
+    let isProcessing = false;
+    
+    // ============================================
+    // FUNÇÃO DE REDIRECIONAMENTO COM UTMs
+    // ============================================
+    function redirectToCheckout() {
+      const finalUrl = CHECKOUT_URL + getUTMQueryString();
+      window.location.href = finalUrl;
+    }
+    
+    // ============================================
+    // FUNÇÃO PARA MOSTRAR LOADING
+    // ============================================
+    function showLoading() {
+      if (isProcessing) return;
+      isProcessing = true;
+      
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<div class="cooud-spinner" style="width:20px;height:20px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;margin-right:8px;display:inline-block;"></div> <span>Processando...</span>';
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+      btn.style.cursor = 'not-allowed';
+      
+      if (btnDismiss) {
+        btnDismiss.disabled = true;
+        btnDismiss.style.opacity = '0.5';
+        btnDismiss.style.cursor = 'not-allowed';
+      }
+      
+      // Redireciona após 500ms
+      setTimeout(function() {
+        redirectToCheckout();
+      }, 500);
+    }
+    
+    // ============================================
+    // ADICIONAR ANIMAÇÃO CSS
+    // ============================================
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    // ============================================
+    // EVENTO DO BOTÃO PRINCIPAL
+    // ============================================
+    if (btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (isProcessing) return;
+        showLoading();
+      });
+    }
+    
+    // ============================================
+    // EVENTO DO BOTÃO "NÃO, OBRIGADO"
+    // ============================================
+    if (btnDismiss) {
+      btnDismiss.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (isProcessing) return;
+        // Lógica para recusar o upsell (pode redirecionar para outra página ou apenas fechar)
+        console.log('Usuário recusou o upsell');
+        // window.location.href = '/obrigado.html';
+      });
+    }
+    
+    console.log('✅ UP5: Botão configurado com One-Click manual');
+  })();
+</script>
                 </div>
             </main>
         </div>
