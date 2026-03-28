@@ -451,119 +451,149 @@
   </div>
 
   <script>
+  (function() {
+    // ============================================
+    // CRONÔMETRO - 15 DIAS FIXOS
+    // ============================================
+
+    const STORAGE_KEY = 'countdown_target_date';
+
+    function getOrCreateTargetDate() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (saved) {
+        const parsed = new Date(saved);
+        if (!isNaN(parsed.getTime())) {
+          return parsed;
+        }
+      }
+
+      const target = new Date();
+      target.setDate(target.getDate() + 15);
+      target.setHours(23, 59, 59, 999);
+
+      localStorage.setItem(STORAGE_KEY, target.toISOString());
+      return target;
+    }
+
+    const targetDate = getOrCreateTargetDate();
+
     (function() {
-      // ============================================
-      // CRONÔMETRO - 15 DIAS EXATOS (CALENDÁRIO)
-      // ============================================
-      function updateCountdown() {
-        // Data alvo: 15 dias a partir de agora
-        const targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + 15);
-        targetDate.setHours(23, 59, 59, 999);
-        
-        const now = new Date();
-        const diff = targetDate - now;
-        
-        const timerEl = document.getElementById('countdown');
-        if (!timerEl) return;
-        
-        if (diff <= 0) {
-          timerEl.textContent = 'Completed!';
-          return;
+    const STORAGE_KEY = 'countdown_target_date';
+
+    function getOrCreateTargetDate() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+
+      if (saved) {
+        const parsed = new Date(saved);
+        if (!isNaN(parsed.getTime())) {
+          return parsed;
         }
-        
-        // Calcula dias, horas e minutos
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        
-        // Formata com dois dígitos
-        timerEl.textContent = `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
       }
-      
-      // Executa imediatamente
-      updateCountdown();
-      
-      // Atualiza a cada minuto (60,000 ms)
-      setInterval(updateCountdown, 60000);
-      
-      // ============================================
-      // GENERATE FAKE TRANSACTION ID
-      // ============================================
-      function generateTransactionId() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let result = 'TKT-';
-        const date = new Date();
-        result += date.getFullYear() + '-';
-        result += String(date.getMonth() + 1).padStart(2, '0') + '-';
-        result += String(date.getDate()).padStart(2, '0') + '-';
-        for (let i = 0; i < 6; i++) {
-          result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
+
+      // 15 dias exatos a partir de agora, menos 1 segundo
+      const target = new Date(Date.now() + (15 * 24 * 60 * 60 * 1000) - 1000);
+
+      localStorage.setItem(STORAGE_KEY, target.toISOString());
+      return target;
+    }
+
+    const targetDate = getOrCreateTargetDate();
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = targetDate.getTime() - now.getTime();
+
+      const timerEl = document.getElementById('countdown');
+      if (!timerEl) return;
+
+      if (diff <= 0) {
+        timerEl.textContent = '00:00:00:00';
+        return;
       }
-      
-      const txIdElement = document.getElementById('transactionId');
-      if (txIdElement) {
-        txIdElement.textContent = `TXN: ${generateTransactionId()}`;
+
+      const totalSeconds = Math.floor(diff / 1000);
+
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+
+      timerEl.textContent =
+        `${String(days).padStart(2, '0')}:` +
+        `${String(hours).padStart(2, '0')}:` +
+        `${String(minutes).padStart(2, '0')}:` +
+        `${String(seconds).padStart(2, '0')}`;
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  })();
+  
+    // ============================================
+    // GENERATE TRANSACTION ID
+    // ============================================
+    function generateTransactionId() {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let result = 'TXN-';
+      const date = new Date();
+      result += date.getFullYear() + '-';
+      result += String(date.getMonth() + 1).padStart(2, '0') + '-';
+      result += String(date.getDate()).padStart(2, '0') + '-';
+      for (let i = 0; i < 6; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
       }
-      
-      // ============================================
-      // CAPTURA UTMs
-      // ============================================
-      function getUTMQueryString() {
-        const params = new URLSearchParams(window.location.search);
-        const fields = ['src', 'sck', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
-        const utms = {};
-        
-        for (let i = 0; i < fields.length; i++) {
-          const v = params.get(fields[i]);
-          if (v) utms[fields[i]] = v;
-        }
-        
-        const fbpMatch = document.cookie.match(/(?:^|;\s*)_fbp=([^;]*)/);
-        if (fbpMatch) utms['_fbp'] = fbpMatch[1];
-        
-        const fbclid = params.get('fbclid');
-        if (fbclid) utms['_fbc'] = 'fb.1.' + Date.now() + '.' + fbclid;
-        
-        return utms;
+      return result;
+    }
+
+    const txIdElement = document.getElementById('transactionId');
+    if (txIdElement) {
+      txIdElement.textContent = `TXN: ${generateTransactionId()}`;
+    }
+
+    // ============================================
+    // CAPTURA UTMs
+    // ============================================
+    function getUTMQueryString() {
+      const params = new URLSearchParams(window.location.search);
+      const fields = ['src', 'sck', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'fbclid'];
+      const utms = {};
+
+      for (let i = 0; i < fields.length; i++) {
+        const v = params.get(fields[i]);
+        if (v) utms[fields[i]] = v;
       }
-      
-      const utms = getUTMQueryString();
-      if (Object.keys(utms).length > 0) {
-        localStorage.setItem('withdrawal_utms', JSON.stringify(utms));
-      }
-      
-      // ============================================
-      // TIKTOK PIXEL - CompletePayment
-      // ============================================
-      if (typeof ttq !== 'undefined') {
-        ttq.track('CompletePayment', {
-          content_name: 'Withdrawal Confirmed',
-          content_category: 'Payout',
-          value: 2979.27,
-          currency: 'USD',
-          status: 'approved'
+
+      const fbpMatch = document.cookie.match(/(?:^|;\s*)_fbp=([^;]*)/);
+      if (fbpMatch) utms['_fbp'] = fbpMatch[1];
+
+      const fbclid = params.get('fbclid');
+      if (fbclid) utms['_fbc'] = 'fb.1.' + Date.now() + '.' + fbclid;
+
+      return utms;
+    }
+
+    const utms = getUTMQueryString();
+    if (Object.keys(utms).length > 0) {
+      localStorage.setItem('withdrawal_utms', JSON.stringify(utms));
+    }
+
+    // ============================================
+    // PEGAR VALOR DA URL
+    // ============================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const amount = urlParams.get('amount');
+    if (amount) {
+      const amountEl = document.querySelector('.amount-value');
+      if (amountEl) {
+        const formattedAmount = parseFloat(amount).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
         });
+        amountEl.textContent = `$${formattedAmount}`;
       }
-      
-      // ============================================
-      // PEGAR VALOR DA URL (se houver)
-      // ============================================
-      const urlParams = new URLSearchParams(window.location.search);
-      const amount = urlParams.get('amount');
-      if (amount) {
-        const amountEl = document.querySelector('.amount-value');
-        if (amountEl) {
-          const formattedAmount = parseFloat(amount).toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          });
-          amountEl.textContent = `$${formattedAmount}`;
-        }
-      }
-    })();
-  </script>
+    }
+  })();
+</script>
 </body>
 </html>
