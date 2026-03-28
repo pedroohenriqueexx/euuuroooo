@@ -42,7 +42,6 @@
       margin: 0 auto;
     }
 
-    /* TikTok Card Style */
     .tiktok-card {
       background: #FFFFFF;
       border-radius: 16px;
@@ -50,7 +49,6 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     }
 
-    /* Header */
     .header {
       padding: 20px 16px 12px;
       border-bottom: 1px solid #efefef;
@@ -92,7 +90,6 @@
       margin-top: 2px;
     }
 
-    /* Checkmark Section */
     .check-section {
       padding: 32px 16px 24px;
       text-align: center;
@@ -142,7 +139,6 @@
       line-height: 1.4;
     }
 
-    /* Amount Section */
     .amount-section {
       padding: 20px 16px;
       border-bottom: 1px solid #efefef;
@@ -169,7 +165,6 @@
       border-top: 1px solid #efefef;
     }
 
-    /* Info Row */
     .info-row {
       display: flex;
       justify-content: space-between;
@@ -194,7 +189,6 @@
       font-weight: 600;
     }
 
-    /* Timeline */
     .timeline-section {
       padding: 20px 16px;
       border-bottom: 1px solid #efefef;
@@ -271,7 +265,6 @@
       color: #000000;
     }
 
-    /* Timer Box */
     .timer-section {
       padding: 20px 16px;
       background: #f8f8f8;
@@ -300,7 +293,6 @@
       margin-top: 8px;
     }
 
-    /* Support Button */
     .support-btn {
       display: flex;
       align-items: center;
@@ -328,7 +320,6 @@
       stroke: #fe2b54;
     }
 
-    /* Footer */
     .footer {
       padding: 16px;
       text-align: center;
@@ -341,7 +332,6 @@
       line-height: 1.5;
     }
 
-    /* Transaction ID */
     .transaction-id {
       font-family: monospace;
       font-size: 12px;
@@ -430,10 +420,10 @@
         </div>
       </div>
 
-      <!-- Timer -->
+      <!-- Timer - CRONÔMETRO FUNCIONAL -->
       <div class="timer-section">
         <div class="timer-label">⏰ Estimated completion</div>
-        <div class="timer-value" id="countdown">15d 00h 00m</div>
+        <div class="timer-value" id="countdown">--d --h --m</div>
         <div class="timer-note">Business days only (Mon-Fri, excluding holidays)</div>
       </div>
 
@@ -462,6 +452,41 @@
 
   <script>
     (function() {
+      // ============================================
+      // CRONÔMETRO - 15 DIAS EXATOS (CALENDÁRIO)
+      // ============================================
+      function updateCountdown() {
+        // Data alvo: 15 dias a partir de agora
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 15);
+        targetDate.setHours(23, 59, 59, 999);
+        
+        const now = new Date();
+        const diff = targetDate - now;
+        
+        const timerEl = document.getElementById('countdown');
+        if (!timerEl) return;
+        
+        if (diff <= 0) {
+          timerEl.textContent = 'Completed!';
+          return;
+        }
+        
+        // Calcula dias, horas e minutos
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        // Formata com dois dígitos
+        timerEl.textContent = `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
+      }
+      
+      // Executa imediatamente
+      updateCountdown();
+      
+      // Atualiza a cada minuto (60,000 ms)
+      setInterval(updateCountdown, 60000);
+      
       // ============================================
       // GENERATE FAKE TRANSACTION ID
       // ============================================
@@ -522,40 +547,6 @@
           status: 'approved'
         });
       }
-      
-      // ============================================
-      // CONTADOR DE 15 DIAS
-      // ============================================
-      function getTargetDate() {
-        let targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + 15);
-        targetDate.setHours(23, 59, 59, 999);
-        return targetDate;
-      }
-      
-      function updateCountdown() {
-        const targetDate = getTargetDate();
-        const now = new Date();
-        const diff = targetDate - now;
-        
-        if (diff <= 0) {
-          const timerEl = document.getElementById('countdown');
-          if (timerEl) timerEl.textContent = 'Completed!';
-          return;
-        }
-        
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        
-        const timerEl = document.getElementById('countdown');
-        if (timerEl) {
-          timerEl.textContent = `${days}d ${hours.toString().padStart(2, '0')}h ${minutes.toString().padStart(2, '0')}m`;
-        }
-      }
-      
-      updateCountdown();
-      setInterval(updateCountdown, 60000);
       
       // ============================================
       // PEGAR VALOR DA URL (se houver)
