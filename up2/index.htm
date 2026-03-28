@@ -354,7 +354,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
       <!-- Amount -->
       <div class="amount-badge">
         <div class="amount-label">VERIFICATION FEE</div>
-        <div class="amount-value">$9.81</div>
+        <div class="amount-value">$17.56</div>
         <div style="font-size: 11px; color: #92400e;">One-time • Refundable</div>
       </div>
 
@@ -400,11 +400,11 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
         <ul class="info-list">
           <li>
             <span class="check-icon">1️⃣</span>
-            <span><strong>Immediate Release</strong> — Your withdrawal ($21.55 + $8.33) is processed within 2 minutes</span>
+            <span><strong>Immediate Release</strong> — Your withdrawal ($19.90 + $21.34) is processed within 2 minutes</span>
           </li>
           <li>
             <span class="check-icon">2️⃣</span>
-            <span><strong>Full Refund</strong> — Both verification fees ($8.33 + $9.81) are credited to your account</span>
+            <span><strong>Full Refund</strong> — Both verification fees ($21.34 + $17.56) are credited to your account</span>
           </li>
           <li>
             <span class="check-icon">3️⃣</span>
@@ -421,7 +421,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
       </div>
 
       <!-- Button -->
-      <button class="btn" id="payBtn">✓ COMPLETE VERIFICATION • $9.81</button>
+      <button class="btn" id="payBtn">✓ COMPLETE VERIFICATION • $17.56</button>
 
       <!-- Guarantee -->
       <div class="guarantee">
@@ -431,7 +431,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 
       <div class="footer">
         <p>© 2024 Fast Withdrawal System • All rights reserved</p>
-        <p>This is a one-time verification fee. Your funds ($21.55 + $8.33 + $9.81 = $39.69) will be available immediately after verification.</p>
+        <p>This is a one-time verification fee. Your funds ($19.90 + $21.34 + $17.56 = $58.80) will be available immediately after verification.</p>
       </div>
     </div>
   </div>
@@ -478,14 +478,14 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
         ttq.track('InitiateCheckout', {
           content_name: 'Verification Fee',
           content_category: 'Withdrawal',
-          value: 9.81,
+          value: 17.56,
           currency: 'USD'
         });
       }
       
       if (typeof fbq === 'function') {
         fbq('track', 'InitiateCheckout', {
-          value: 9.81,
+          value: 17.56,
           currency: 'USD',
           content_name: 'Verification Fee'
         });
